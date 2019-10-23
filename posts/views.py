@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PostForm
-from .models import HashTag, Post
+from .forms import PostForm, CommentForm
+from .models import HashTag, Post, Comment
 # Create your views here.
 
 def index(request):
     posts = Post.objects.all()
+    comment_form = CommentForm()
     context = {
-        'posts': posts
+        'posts': posts,
+        'comment_form':comment_form
     }
     return render(request, 'posts/index.html', context)
 
@@ -52,3 +54,26 @@ def hashtags(request, id):
         'posts':posts
     }
     return render(request, 'posts/index.html', context)
+
+def likes(request,id):
+    like = get_object_or_404(Post, id=id)
+    user = request.user
+    if like.like_users.filter(id=user.id):
+        like.like_users.remove(user)
+    else:
+        like.like_users.add(user)
+    return redirect("posts:index")
+
+def comment_create(request,id):
+    post = get_object_or_404(Post, id=id)
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        comment = comment_form.save(commit=False)
+        comment.post = post
+        comment.save()
+        return redirect('posts:index')
+    
+def comment_delete(requestm, post_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.delete()
+    return redirect('posts:index')

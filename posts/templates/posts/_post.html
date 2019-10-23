@@ -1,8 +1,21 @@
+{% load make_link %}
 <div class="card col-6">
   <img src="{{post.image.url}}" class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">{{post.content}}</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
+    <h5 class="card-title">{{post.content}}</h5>
+    <p class="card-text">{{ post|hashtag_link }}</p>
+    <a href="{% url 'posts:likes' post.id %}" class="btn btn-primary">좋아요 {{post.like_users.count}}</a>
+    <form action="{% url 'posts:comment_create' post.id %}" method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <input type="submit">  
+    </form>
+
+    {% for comment in post.comment_set.all %}
+      <div class="alert alert-warning" role="alert">
+        {{comment.content}}  
+        <a href="{% url 'posts:comment_delete' post.id comment.id %}"><input type="submit" value="댓글삭제"></a>
+      </div>
+    {% endfor %}
   </div>
 </div>
