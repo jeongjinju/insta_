@@ -16,7 +16,7 @@ class Post(models.Model):
                 processors= [ResizeToFill(300,300)],
                 format= 'JPEG',
                 options= {'quality': 90},
-                upload_to= 'feeds'
+                upload_to= 'media'
     )
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_posts')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -123,7 +123,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 # 글로벌 변수 선언, 우선 순위
 # 기본 설정은 'auth.user'
 AUTH_USER_MODEL = 'accounts.User'
+
+# 외부에서 사용자가 접근 가능하게 하도록 하는 URL > urls.py랑 비슷
+MEDIA_URL = '/media/'
+# 내부에서 파일을 찾는 서버와 비슷한 역할 
+MEDIA_ROOT = os.path.join(BASE_DIR)
