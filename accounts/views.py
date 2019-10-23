@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 
 from .forms import CustomUserCreationForm
+from .models import User
 
 # UserCreationForm은 ModelForm > 원래 Model정보를 알아야 함
 # AuthenticationForm Form을 상속받기 때문에 원래 Model 정보를 몰라도 가능하다
@@ -40,3 +41,11 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect("accounts:login")
+
+def user_page(request, id):
+    user_info = get_object_or_404(User, id=id)
+    context = {
+        'user_info': user_info
+    }
+
+    return render(request, 'accounts/user_page.html', context)
