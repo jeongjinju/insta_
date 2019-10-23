@@ -11,3 +11,5 @@ class User(AbstractUser):
     # 해결 : 
     # auth app안에 있는 user 모델 > settings.py > AUTH_USER_MODEL 변수 설정
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followings")
+
+
