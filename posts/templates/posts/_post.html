@@ -1,6 +1,6 @@
 {% load bootstrap4 %}
 {% load make_link %}
-<div class="card d-inline-block" style="width: 18rem height: 30rem";>
+<div class="card d-inline-block" style="width: 18rem";>
 
   <h5>✏️<span class="card-title d-inline d-flex justify-content-center"><a href="{% url 'accounts:user_page' post.user.id %}">{{post.user}}</a></span></h5>
   <img src="{{post.image.url}}" class="card-img-top" alt="...">
