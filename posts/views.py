@@ -19,6 +19,7 @@ def index(request):
     }
     return render(request, 'posts/index.html', context)
 
+
 def create(request):
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
