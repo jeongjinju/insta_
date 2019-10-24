@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from django.contrib.auth import update_session_auth_hash
 from .models import User
 
 # UserCreationForm은 ModelForm > 원래 Model정보를 알아야 함
@@ -86,3 +88,46 @@ def follow(request, id):
 
 
 
+def delete(request, id):
+    # 보고 있는 페이지의 유저 정보
+    user_info = get_object_or_404(User, id=id)
+    user = request.user
+
+    if user == user_info:
+        user.delete()
+    return redirect('posts:index')
+
+
+def update(request):
+    if request.method == "POST":
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('posts:index')
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+        # 이렇게 가져온 폼에는 
+        # 사용자가 임의로 건들여선 안 되는 정보도 함께 가져오게 된다.
+    context = {
+        'form':form
+    }
+    return render(request, 'accounts/form.html', context)
+
+def password(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            # 비밀번호가 바뀌면서 세션이 바뀌어
+            # index페이지로 가면 로그아웃된 상태가 된다.
+            # 이를 해결하기 위함.
+            update_session_auth_hash(request, form.user)
+            return redirect('posts:index')
+
+    else:
+        form = PasswordChangeForm(request.user)
+    context = {
+        'form':form
+    }
+    return render(request, 'accounts/form.html', context)
+    
