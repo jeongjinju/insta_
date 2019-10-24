@@ -90,12 +90,15 @@ def follow(request, id):
 
 def delete(request, id):
     # 보고 있는 페이지의 유저 정보
-    user_info = get_object_or_404(User, id=id)
-    user = request.user
+    if request.method == "POST":
+        user_info = get_object_or_404(User, id=id)
+        user = request.user
 
-    if user == user_info:
-        user.delete()
-    return redirect('posts:index')
+        if user == user_info:
+            user.delete()
+        return redirect('posts:index')
+    else:
+        return redirect('accoutns:user_page',id)
 
 
 def update(request):
@@ -130,4 +133,26 @@ def password(request):
         'form':form
     }
     return render(request, 'accounts/form.html', context)
-    
+
+
+def profile(request):
+    user_info = request.user
+    context = {
+        'user_info': user_info
+    }
+
+    return render(request, 'accounts/user_page.html', context)
+
+
+def try_login(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            auth_login(request, form.get_user())
+            return redirect('posts:index')
+    else:
+        form = AuthenticationForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'accounts/try_login.html', context)

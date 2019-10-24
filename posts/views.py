@@ -1,14 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import PostForm, CommentForm
 from .models import HashTag, Post, Comment
+
+from django.core.paginator import Paginator
+
 # Create your views here.
 
 def index(request):
     posts = Post.objects.all()
     comment_form = CommentForm()
+
+    paginator = Paginator(posts, 3)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
     context = {
         'posts': posts,
-        'comment_form':comment_form
+        'comment_form':comment_form,
     }
     return render(request, 'posts/index.html', context)
 
@@ -45,6 +52,28 @@ def create(request):
     }
     return render(request, 'posts/form.html', context)
 
+def update(request,id):
+    post = get_object_or_404(Post, id=id)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            # 수정시에도 Hashtag M:M 설정 다시 해주어야 함
+            post.save()            
+            # 이전의 연결을 전부 끊기
+            post.hashtags.clear()
+            
+            for word in post.content.split():
+                if word.startswith("#"):
+                    hashtag = HashTag.objects.get_or_create(content=word)[0]
+                    post.hashtags.add(hashtag)
+            return redirect('posts:index')
+    else:
+        form = PostForm(instance=post)
+    context = {
+        'form':form
+    }
+    return render(request, 'posts/form.html', context)
+
 
 def hashtags(request, id):
     hashtag = get_object_or_404(HashTag, id=id)
@@ -73,7 +102,8 @@ def comment_create(request,id):
         comment.save()
         return redirect('posts:index')
     
-def comment_delete(requestm, post_id, comment_id):
+def comment_delete(request, post_id, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     comment.delete()
     return redirect('posts:index')
+

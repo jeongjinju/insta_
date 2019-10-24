@@ -13,4 +13,7 @@ urlpatterns = [
     path('<int:id>/delete/', views.delete, name="delete"),
     path('update/', views.update, name="update"),
     path('password/', views.password, name="password"),
+    path('profile/', views.profile, name="profile"),
+
+    path('try-login/', views.try_login, name="try_login"),
 ]

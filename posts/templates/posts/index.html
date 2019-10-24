@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
+{% load bootstrap_pagination %}
 {% block body %}
-  <h1>Hello World!</h1>
   {% for post in posts %}
     {% include 'posts/_post.html' %}
   {% endfor %}
+  <div class="d-flex justify-content-center my-3">
+    {% bootstrap_paginate posts %}
+  </div>
 {% endblock %}

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'posts',
     'imagekit',
     'bootstrap4',
+    'bootstrap_pagination',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -146,3 +147,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
+
+# LOGIN_REDIRECT_URL = 'posts:index'

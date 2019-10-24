@@ -1,20 +1,43 @@
+{% load bootstrap4 %}
 {% load make_link %}
-<div class="card col-6">
+<div class="card d-inline-block" style="width: 18rem height: 30rem";>
+
+  <h5>✏️<span class="card-title d-inline d-flex justify-content-center"><a href="{% url 'accounts:user_page' post.user.id %}">{{post.user}}</a></span></h5>
   <img src="{{post.image.url}}" class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">{{post.content}}</h5>
-    <p class="card-text">{{ post|hashtag_link }}</p>
-    <a href="{% url 'posts:likes' post.id %}" class="btn btn-primary">좋아요 {{post.like_users.count}}</a>
-    <form action="{% url 'posts:comment_create' post.id %}" method="post">
+    <p class="card-text">{{ post|hashtag_link|safe }}</p>
+    
+    <form action="{% url 'posts:update' post.id %}" method="post">
       {% csrf_token %}
-      {{ comment_form.as_p }}
-      <input type="submit">  
+        <input type="submit" value="수정">
     </form>
+
+    <div class="text-right">
+      {% if user.is_authenticated %}
+        {% if user in post.like_users.all %}
+          <p class="text-right"><a href="{% url 'posts:likes' post.id %}" class="btn btn-light"><i class="fas fa-heart" style="color: red;"></i> {{post.like_users.count}}</a></p>
+        {% else %}
+        <p class="text-right"><a href="{% url 'posts:likes' post.id %}" class="btn btn-light"><i class="far fa-heart" style="color: red;"></i> {{post.like_users.count}}</a></p> 
+        {% endif %}
+      {% else %}
+        <a href="" >{{post.like_users.count}}</a>
+      {% endif %}
+    </div>  
+
+    <div class="text-right">
+      <form action="{% url 'posts:comment_create' post.id %}" method="post">
+        {% csrf_token %}
+        {% bootstrap_field comment_form.content show_label=False placeholder=False %}
+        <input type="submit" class="btn btn-info">  
+      </form>
+    </div>
 
     {% for comment in post.comment_set.all %}
       <div class="alert alert-warning" role="alert">
         {{comment.content}}  
-        <a href="{% url 'posts:comment_delete' post.id comment.id %}"><input type="submit" value="댓글삭제"></a>
+        <div class="text-right">
+          <a href="{% url 'posts:comment_delete' post.id comment.id %}"><input type="submit" value="댓글삭제" class="btn btn-dark"></a>
+        </div>
       </div>
     {% endfor %}
   </div>
